@@ -19,7 +19,7 @@ var guild = {
 	apprentices = 0, // number of apprentices
 	stables = 0,
 	dorms = false,
-	bed = 0, // 0 - wooden, 1 - metal, 2 - crystal
+	bed = 0, // 0 - wooden, 1 - ornate, 2 - metal, 3 - crystal
 }
 
 var player = {
@@ -32,4 +32,46 @@ var player = {
 	eggsshaped: 0, // number of successful shaped eggs
 	gold: 0, // currency quantity
 }
+
+function Genistar(type){ // genistar class framework
+	this.type = type;
+	if (type == "default"){
+		this.value = 5000;
+	} else if (type == "ge-mouse"){
+		this.value = 10;
+	} else if (type == "ge-squirrel"){
+		this.value = 25;
+	} else if (type == "ge-cat"){
+		this.value = 50;
+	} else if (type == "ge-monkey"){
+		this.value = 100;
+	} else if (type == "ge-wolf"){
+		this.value = 300;
+	} else if (type == "ge-eagle"){
+		this.value = 500;
+	} else if (type == "ge-owl"){
+		this.value = 600;
+	} else if (type == "ge-mule"){
+		this.value = 800;
+	} else if (type == "ge-horse"){
+		this.value = 1000;
+	} else {
+		this.value = 100;
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
