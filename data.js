@@ -352,7 +352,7 @@ NodeList.prototype.remove = HTMLCollection.prototype.remove = function() {
 		}
 	}
 }
-function addButton(gentype, merchant, value){
+function addButton(gentype, merchant, value, offerTime){
 	var element = document.createElement("BUTTON");
 	var parentelement = document.createElement("DIV");
 	element.setAttribute("class", "btn");
@@ -395,7 +395,7 @@ function addButton(gentype, merchant, value){
 		document.getElementById("auctionobject").remove();
 	}
 
-	recycleButton(this, 1000);
+	recycleButton(this, offerTime);
 }
 
 function recycleButton(object, time){
@@ -444,7 +444,7 @@ function merchantOffers(){
 			}
 		}
 		if (result != null){
-			//addButton(result, index, 100);
+			addButton(result, index, 100, Math.random() * 120000);;
 		}
 	}
 
