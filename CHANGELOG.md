@@ -12,6 +12,10 @@ NEXT:
 Begin incorporating game data in UI
 Design eggshaping mechanic
 
+v0.0.4
+======
+Added proper onload event
+
 v0.0.3
 ======
 Added save/load functionality

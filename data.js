@@ -139,7 +139,8 @@ function Merchant(){ // Merchant interested in genistar
 		this.purse = Math.floor(Math.random() * 1000);
 		updateLog("A merchant named " + this.firstname + " " + this.lastname + " arrives with $" + this.purse);
 		//console.log("A merchant named " + this.firstname + " " + this.lastname + " arrives with $" + this.purse);
-	}	
+	}
+	this.uid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {var r = Math.random()*16|0,v=c=='x'?r:r&0x3|0x8;return v.toString(16);});
 }
 
 var d20 = {
@@ -240,13 +241,6 @@ $('#btnwipesave').click(function(e){
 	deleteSave();
 });
 
-$('#resetoptions').hide(); // disable the options div when we load
-$('#playeroptions').hide();
-$('#changelog').hide();
-$('#guild').hide();
-$('#npcs').hide();
-$('#marketarea').hide();
-
 $('#btnnext').click(function(e){
 	if ($('#player').is(':visible')){
 		current = "#player";
@@ -283,11 +277,6 @@ $('#btnMarket').click(function(e){
 	$('#marketarea').show();
 	$('#stablesarea').hide();
 });
-if (window.File && window.FileReader && window.FileList && window.Blob) {
-	readChangelog()
-} else {
-  alert('The File APIs are not fully supported by your browser.');
-}
 
 $('#autosave').click(function(e){
 	autosavevalue = document.getElementById('autosave');
@@ -352,42 +341,107 @@ function shapeEgg(autoclicked){
 $('#btnshape').click(function(e){
 	shapeEgg();
 })
-// Timers
 
-window.setInterval(function() {
-	roll = d20.roll(20, false);
-	//console.log(roll);
-	if (roll <= 3){
-		merchroll = d20.roll('2d6');
-		if (merchroll <= 10){
-			//console.log("Merchants come...")
-			createMerchant();
-		} else {
-			//console.log("Merchants go...")
-			if (npcs['merchants'].length >= 1){
-				randommerchant = Math.floor(Math.random() * npcs['merchants'].length);
-				chosenmerchant = npcs['merchants'][randommerchant]['firstname']
-				updateLog(chosenmerchant + " leaves...");
-				npcs['merchants'].splice(randommerchant, 1);
+function addButton(gentype, merchant, value){
+	var element = document.createElement("BUTTON");
+	var parentelement = document.createElement("DIV");
+	element.setAttribute("class", "btn");
+	element.setAttribute("id", "btnSell" + gentype);
+	element.name = gentype;
+
+	var t = document.createTextNode("Sell " + genistars[gentype][0] + " to " + npcs['merchants'][merchant]['firstname'] + " " + npcs['merchants'][merchant]['lastname']);
+	element.appendChild(t);
+	parentelement.id = 'playareaobject';
+	parentelement.appendChild(element);
+
+	var foo = document.getElementById("marketarea");
+	foo.appendChild(parentelement);
+
+	element.uid = npcs['merchants'][merchant]['uid'];
+	element.gentype = gentype;
+	element.sellval = value;
+	par = parentelement;
+
+	element.onclick = function() {
+		var sold = false
+		for (var index in npcs['merchants']){
+			if (npcs['merchants'][index]['uid'] == this.uid){
+				if (genistars[gentype][1] > 0){
+					updateLog("You sold " + npcs['merchants'][index]['firstname'] + " " + npcs['merchants'][index]['lastname'] + " a " + genistars[this.gentype][0] + " for " + this.sellval);
+					npcs['merchants'][index]['purse'] -= this.sellval;
+					sold = !this.sold;
+					console.log("Setting sold to " + sold);
+				} else {
+					updateLog("You ran out of genistars since this offer was made!");
+					sold = !this.sold;
+				}
 			}
 		}
-		//console.log("Merchants come and go.");
-	//} else if (roll >= 4 && roll <= 5){ // ignore 5
-	} else if (roll == 4){
-		console.log("Something annoying happens");
-	} else if (roll >= 5 && roll <= 7){ //
-		console.log("Something benificial happens");
-	} else if (roll >= 8 && roll <= 20){
-		console.log("Nothing happens...");
+		if (sold == false){
+			updateLog("It seems this offer has expired!");
+		}
+		var parent = this.parentElement;
+		parent.parentElement.removeChild(parent);
 	}
 
-}, 2000);
+	this.kill = function(){
+		var parent = this.par;
+		parent.parentElement.removeChild(parent);		
+	}
+
+	recycleButton(this, 1000);
+}
+
+function recycleButton(object, time){
+	timer = setTimeout(function(){
+		object.kill();
+	}, time);
+}
 
 function updateMerchants(){
 	document.getElementById("merchants").innerHTML = "";
 	for (var index in npcs['merchants']){
+		npcs['merchants'][index]['purse']--;
+		if (npcs['merchants'][index]['purse'] <= 0){
+			updateLog(npcs['merchants'][index]['firstname'] + " " + npcs['merchants'][index]['lastname'] + " ran out of money and left.");
+			npcs['merchants'].splice(index, 1);
+		}
 		document.getElementById("merchants").innerHTML += npcs['merchants'][index]['firstname'] + " " + npcs['merchants'][index]['lastname'] + " ($" + npcs['merchants'][index]['purse'] + ")<br />";
+
+		var result;
+		var inc = 0;
+		for (var prop in genistars){
+			if (Math.random() < 1/++inc) {
+				if (genistars[prop][1] > 0){
+					result = prop;	
+				}
+				
+			}
+		}
+		if (result != null){
+			//addButton(result, index, 100);
+		}
 	}
+
+}
+
+function merchantOffers(){
+	for (var index in npcs['merchants']){
+		var result;
+		var inc = 0;
+		for (var prop in genistars){
+			if (Math.random() < 1/++inc) {
+				if (genistars[prop][1] > 0){
+					result = prop;	
+				}
+				
+			}
+		}
+		if (result != null){
+			//addButton(result, index, 100);
+		}
+	}
+
 }
 
 function updateStats(){
@@ -399,36 +453,88 @@ function updateStats(){
 	document.getElementById("laypercent").innerHTML = prettify(player['laypercent']) + "%";
 }
 
-window.setInterval(function() {
-	// Update screen vars
-	document.getElementById("playerName").innerHTML = player["name"];
-	document.title = "Eggshaper - " + player['name'];
-	document.getElementById('autosave').checked = settings['autosave'];
-	document.getElementById('eggshapes').innerHTML = player['eggsshaped'];
-	updateMerchants();
-	updateStats();
+function onLoad(){
+	// big time onload stuff
+	loadGame();
 
-	if (document.getElementById('autoclick').checked == true){
-		shaping = true;
-		shapeEgg(true);
+	if (window.File && window.FileReader && window.FileList && window.Blob) {
+		readChangelog()
 	} else {
-		shaping = false;
+	  alert('The File APIs are not fully supported by your browser.');
 	}
 
-	layEggs();
-}, 100);
+	$('#resetoptions').hide(); // disable the options div when we load
+	$('#playeroptions').hide();
+	$('#changelog').hide();
+	$('#guild').hide();
+	$('#npcs').hide();
+	$('#marketarea').hide();
+	
+	window.setInterval(function() {
+		// Update screen vars
+		document.getElementById("playerName").innerHTML = player["name"];
+		document.title = "Eggshaper - " + player['name'];
+		document.getElementById('autosave').checked = settings['autosave'];
+		document.getElementById('eggshapes').innerHTML = player['eggsshaped'];
+		updateMerchants();
+		updateStats();
 
-window.setInterval(function() {
-	// autosave
-	if (settings['autosave'] == true){
-		saveGame();
-	}
-}, 120000);
+		if (document.getElementById('autoclick').checked == true){
+			shaping = true;
+			shapeEgg(true);
+		} else {
+			shaping = false;
+		}
 
-// big time onload stuff
-loadGame();
+		layEggs();
+	}, 100);
 
+	window.setInterval(function(){
+		merchantOffers();
+	}, 10000)
 
+	window.setInterval(function() {
+		// autosave
+		if (settings['autosave'] == true){
+			saveGame();
+		}
+	}, 120000);
+
+	window.setInterval(function() {
+		roll = d20.roll(20, false);
+		//console.log(roll);
+		if (roll <= 3){
+			merchroll = d20.roll('2d6');
+			if (merchroll <= 10){
+				//console.log("Merchants come...")
+				createMerchant();
+			} else {
+				//console.log("Merchants go...")
+				if (npcs['merchants'].length >= 1){
+					randommerchant = Math.floor(Math.random() * npcs['merchants'].length);
+					chosenmerchant = npcs['merchants'][randommerchant]['firstname']
+					updateLog(chosenmerchant + " leaves...");
+					npcs['merchants'].splice(randommerchant, 1);
+				}
+			}
+			//console.log("Merchants come and go.");
+		//} else if (roll >= 4 && roll <= 5){ // ignore 5
+		} else if (roll == 4){
+			console.log("Something annoying happens");
+		} else if (roll >= 5 && roll <= 7){ //
+			console.log("Something benificial happens");
+		} else if (roll >= 8 && roll <= 20){
+			console.log("Nothing happens...");
+		}
+
+	}, 2000);
+}
+
+$( document ).ready(function() {
+	// Onload!
+	onLoad();
+	console.log("Ready!");
+});
 
 
 
