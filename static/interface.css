@@ -65,6 +65,12 @@ body {
 	padding:10px;
 	vertical-align: top;
 }
+#changelog {
+	width: 350px;
+	float:left;
+	padding:10px;
+	vertical-align: top;
+}
 textarea#log {
 	width: 350px;
 	height: 400px;

@@ -48,6 +48,29 @@ function updateLog(logmessage){
 }
 updateLog("Welcome...");
 
+function readChangelog(){
+	var loc = window.location.pathname;
+	var dir = loc.substring(0, loc.lastIndexOf('/'));
+	var path = "CHANGELOG.md";
+	try { // check to see if were going to work
+		var rawFile = new XMLHttpRequest();
+		rawFile.open("GET", path, false);
+		rawFile.onreadystatechange = function() {
+			changelograw = rawFile.responseText.split("\n");
+			for (i = 0; i < changelograw.length; i++){
+				document.getElementById("changelog").innerHTML += changelograw[i] + "<br />";
+			}
+
+			//document.getElementById("changelog").innerHTML += changelograw;
+		}
+		rawFile.send(null);
+	} catch(err){
+		document.getElementById("changelog").innerHTML += "We could not load the CHANGELOG... <br />";
+		document.getElementById("changelog").innerHTML += "Try checking later...";
+	}
+
+}
+
 // classes 
 function Merchant(){ // Merchant interested in genistar
 	this.firstname = firstnames[Math.floor(Math.random()*firstnames.length)];
@@ -140,14 +163,42 @@ function diceRoll(){
 
 // Window functions
 
-$('#resetoptions').toggle(); // disable the options div when we load
-$('#playeroptions').toggle();
+$('#resetoptions').hide(); // disable the options div when we load
+$('#playeroptions').hide();
+$('#changelog').hide();
+if (window.File && window.FileReader && window.FileList && window.Blob) {
+	readChangelog()
+} else {
+  alert('The File APIs are not fully supported by your browser.');
+}
 
 $('#btnoptions').click(function(e){ // toggle the divs
 	e.preventDefault();
-	$('#playarea').toggle();
-	$('#resetoptions').toggle();
-	$('#playeroptions').toggle();
+	$('#changelog').hide();
+
+	if ($('#resetoptions').is(':visible')){
+		$('#playarea').show();
+		$('#resetoptions').hide();
+		$('#playeroptions').hide();		
+	} else {
+		$('#playarea').hide();
+		$('#resetoptions').show();
+		$('#playeroptions').show();
+	}
+})
+
+$('#btnchangelog').click(function(e){
+	$('#resetoptions').hide();
+	$('#playeroptions').hide();
+
+	if ($("#changelog").is(':visible')){
+		$('#playarea').show();
+		$('#changelog').hide();
+	} else {
+		$('#playarea').hide();
+		$('#changelog').show();		
+	}
+	// Check for the various File API support.
 })
 
 // Timers

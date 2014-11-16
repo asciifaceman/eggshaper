@@ -12,6 +12,11 @@ NEXT:
 Begin incorporating game data in UI
 Design eggshaping mechanic
 
+v0.0.2
+======
+Fleshed out the changelog showing in-game system (for now)
+Created a python test script (to create local webserver)
+Minor UI work
 
 v0.0.1
 ======
