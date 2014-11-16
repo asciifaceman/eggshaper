@@ -46,6 +46,8 @@ var settings = {
 	autosave: true,
 }
 
+var shaping = false;
+
 // system functions
 
 function saveGame(){
@@ -53,7 +55,7 @@ function saveGame(){
 	localStorage.setItem("genistarSave", JSON.stringify(genistars));
 	localStorage.setItem("npcSave", JSON.stringify(npcs));
 	localStorage.setItem("settingsSave", JSON.stringify(settings));
-	console.log("Game Saved");
+	updateLog("Game saved!");
 }
 function loadGame(){
 	var playerSave = JSON.parse(localStorage.getItem("playerSave"));
@@ -119,6 +121,7 @@ function readChangelog(){
 
 // classes 
 function Merchant(){ // Merchant interested in genistar
+
 	this.firstname = firstnames[Math.floor(Math.random()*firstnames.length)];
 	this.lastname = lastnames[Math.floor(Math.random()*lastnames.length)];
 	moneyroll = d20.roll(20, false);
@@ -130,8 +133,7 @@ function Merchant(){ // Merchant interested in genistar
 		this.purse = Math.floor(Math.random() * 1000);
 		updateLog("A merchant named " + this.firstname + " " + this.lastname + " arrives with $" + this.purse);
 		//console.log("A merchant named " + this.firstname + " " + this.lastname + " arrives with $" + this.purse);
-	}
-	
+	}	
 }
 
 var d20 = {
@@ -198,8 +200,12 @@ function createGenistar(typebase){
 }
 
 function createMerchant(){
-	temp = new Merchant();
-	npcs['merchants'].push(temp)
+	if (npcs['merchants'].length >= 8){
+		updateLog("A merchant stopped, but there was no room...");
+	} else {
+		temp = new Merchant();
+		npcs['merchants'].push(temp)
+	}
 }
 
 function diceRoll(){
@@ -292,14 +298,20 @@ $('#btnchangelog').click(function(e){
 	// Check for the various File API support.
 });
 
+$('#btnsavegame').click(function(e){
+	saveGame();
+})
+$('#btnloadgame').click(function(e){
+	loadGame();
+})
 // Timers
 
 window.setInterval(function() {
 	roll = d20.roll(20, false);
 	//console.log(roll);
-	if (roll <= 5){
+	if (roll <= 3){
 		merchroll = d20.roll('2d6');
-		if (merchroll <= 6){
+		if (merchroll <= 10){
 			//console.log("Merchants come...")
 			createMerchant();
 		} else {
@@ -312,28 +324,35 @@ window.setInterval(function() {
 			}
 		}
 		//console.log("Merchants come and go.");
-	} else if (roll >= 6 && roll <= 8){
+	} else if (roll >= 6 && roll <= 7){ // ignore 5
 		console.log("Something annoying happens");
-	} else if (roll >= 9 && roll <= 11){ //
+	} else if (roll >= 9 && roll <= 10){ //
 		console.log("Something benificial happens");
-	} else if (roll >= 12 && roll <= 20){
+	} else if (roll >= 11 && roll <= 20){
 		console.log("Nothing happens...");
 	}
 
-}, 1000);
+}, 2000);
+
+function updateMerchants(){
+	document.getElementById("merchants").innerHTML = "";
+	for (var index in npcs['merchants']){
+		document.getElementById("merchants").innerHTML += npcs['merchants'][index]['firstname'] + " " + npcs['merchants'][index]['lastname'] + " ($" + npcs['merchants'][index]['purse'] + ")<br />";
+	}
+}
 
 window.setInterval(function() {
 	// Update screen vars
 	document.getElementById("playerName").innerHTML = player["name"];
 	document.title = "Eggshaper - " + player['name'];
 	document.getElementById('autosave').checked = settings['autosave'];
+	updateMerchants();
 }, 100);
 
 window.setInterval(function() {
 	// autosave
 	if (settings['autosave'] == true){
 		saveGame();
-		updateLog("Game saved!");
 	}
 }, 120000);
 
