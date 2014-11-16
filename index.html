@@ -1,0 +1,49 @@
+<html>
+
+	<head>
+		<link rel="stylesheet" type="text/css" href="static/interface.css" />
+		<script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+		<script src="https://code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
+	</head>
+	<body>
+	
+	<div id="header">
+	<h1>Eggshaper</h1>
+	</div>
+	<div id="nav">
+	<button class="btn" id="btnoptions">Options</button>
+	<button class="btn" id="btnchange">Changelog</button>
+	</div>
+
+	<!--<div id="options">
+	<button class="btn">Reset</button><button class="btn">Hard Reset</button>
+	</div>-->
+
+	<div id="playareaholder">
+		<div id="player">
+		</div>
+
+		<div id="playarea">
+		</div>
+
+		<div id="resetoptions">
+			<button class="btn">Reset Void</button> (restart with bonus)<br /><br />
+			<button class="btn">Wipe Save</button>
+		</div>
+		<div id="playeroptions">
+			<button class="btn">Change Name</button>
+			<button class="btn">Bug Report</button><br />
+			<button class="btn" disabled>Export Save</button>
+			<button class="btn" disabled>Import Save</button>
+		</div>
+
+		<div id="logarea">
+		<textarea disabled name="game log" id="log" onfocus="setbg('#e5fff3');" onblur="setbg('white')" rows="20" cols="60"></textarea>
+		</div>
+	</div>
+	<div id="footer">
+	<small>Eggshaper v0.0.1 ALPHA &copy; ActivatedAlmond (2014/2015) </small> 
+	</div>
+		<script type="text/javascript" src="data.js"></script>
+	</body>
+</html>
