@@ -16,10 +16,6 @@
 	<button class="btn" id="btnmythos">HowTo</button>
 	</div>
 
-	<!--<div id="options">
-	<button class="btn">Reset</button><button class="btn">Hard Reset</button>
-	</div>-->
-
 	<div id="playareaholder">
 		<div id="playermenu">
 			<div id="player">
@@ -60,10 +56,54 @@
 		</div>
 
 		<div id="playarea">
-
-		
-
-		</div>
+			<div id="playareaheader">
+			<button class="btn" id="btnStables">Stables</button><button class="btn" id="btnMarket">Market</button><br />
+			</div>
+			<div id="stablesarea">
+				<div id="playareaobject">
+					Egg Laying<br />
+					<div id="layMeter">
+						<div class="layMeter">
+							<div id="laying"></div>
+							<div id="laynumber">
+								<div id="laypercent"> </div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div id="playareaobject">
+					Egg Shaping<br />
+					<div id="eggMeter">
+						<div class="eggMeter">
+							<div id="eggs"></div>
+							<div id="eggnumber">
+								<div id="eggpercent"> </div>
+							</div>
+						</div>
+					</div>
+					&nbsp;&nbsp;<input type="Checkbox" name="autoclick" id="autoclick" value="autoclick" />&nbsp;&nbsp;
+					<span id="eggshapes">0</span>
+				</div>
+				<div id="playareaobject">
+					<button class="btnshape" id="btnshape"/>
+				</div>
+				<br />
+				<div id="playareaobject">
+					TESTING BOX
+				</div>
+			</div> <!-- end stables area -->
+			<div id="marketarea">
+				<div id="playareaobject">
+					<button class="btn" id="btnSellEgg">Sell Egg</button>
+				</div>
+				<div id="playareaobject">
+					<button class="btn" id="btnSellDef">Sell Default</button>
+				</div>
+				<div id="playareaobject">
+					<button class="btn" id="btnSellMouse">Sell ge-mouse</button>
+				</div>
+			</div> <!--end market area -->
+		</div> <!--end play area -->
 
 		<div id="resetoptions">
 			<button class="btn" id="btnreset">Reset Void</button> (restart with bonus)<br /><br />

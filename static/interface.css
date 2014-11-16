@@ -44,10 +44,22 @@ body {
 	padding:5px;
 }
 #playarea {
-	width: 350px;
+	width: 450px;
 	float:left;
-	padding:10px;
+	padding:5px;
 	vertical-align: top;
+}
+#playareaheader {
+	text-align: center;
+	padding:5px;
+	float: top;
+	border: 2px solid;
+	width: 100%;
+}
+#playareaobject {
+	border: 2px solid;
+	padding:10px;
+	float: left;
 }
 #logarea {
 	width: 350px;
@@ -87,17 +99,37 @@ body {
 	padding:10px;
 	vertical-align: top;
 }
-#egg {
-	border-radius: 50%;
-	border-style: solid;
-	border-width: 2px;
-	border-color: gray;
-	box-shadow: 0 0 64px white;
-    -webkit-animation: spin-right 10s linear infinite;
-     -moz-animation: spin-right 10s linear infinite;
-      -ms-animation: spin-right 10s linear infinite;
-       -o-animation: spin-right 10s linear infinite;
-          animation: spin-right 10s linear infinite;
+#eggnumber {
+	background: gray;
+	transition: width 200ms east-in-out;
+	overflow: hidden;
+	position: relative;
+	left: 0px;
+	top: 0px;
+	width: 190px;
+}
+#eggMeter {
+	position: relative;
+	width: 200px;
+	border: 3px solid;
+	border-radius: 10px;
+	overflow: hidden;
+}
+#laynumber {
+	background: gray;
+	transition: width 200ms east-in-out;
+	overflow: hidden;
+	position: relative;
+	left: 0px;
+	top: 0px;
+	width: 190px;
+}
+#layMeter {
+	position: relative;
+	width: 200px;
+	border: 3px solid;
+	border-radius: 10px;
+	overflow: hidden;
 }
 #playermenu {
 	line-height:30px;
@@ -121,7 +153,8 @@ textarea#log {
 	resize:none;
 }
 
-.btn {
+.btn,
+.btnshape {
   background: #000000;
   background-image: -webkit-linear-gradient(top, #000000, #37827e);
   background-image: -moz-linear-gradient(top, #000000, #37827e);
@@ -142,10 +175,12 @@ textarea#log {
   text-decoration: none;
 }
 
-.btn:focus {
+.btn:focus,
+.btnshape {
 	outline: none;
 }
-.btn:hover {
+.btn:hover,
+.btnshape {
   background: #2a4235;
   background-image: -webkit-linear-gradient(top, #2a4235, #3db86e);
   background-image: -moz-linear-gradient(top, #2a4235, #3db86e);
@@ -153,6 +188,14 @@ textarea#log {
   background-image: -o-linear-gradient(top, #2a4235, #3db86e);
   background-image: linear-gradient(to bottom, #2a4235, #3db86e);
   text-decoration: none;
+}
+.btnshape {
+	background:url(./plain_egg.png);
+	background-repeat: no-repeat;
+	background-size: 59px;
+	width: 60px;
+	height: 60px;
+	background-position: center;
 }
 .btnarrow {
   background: #000000;

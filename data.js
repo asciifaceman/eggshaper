@@ -32,6 +32,7 @@ var player = {
 	failedshapes: 0, // number of failed eggshapes
 	eggsshaped: 0, // number of successful shaped eggs
 	gold: 0, // currency quantity
+	laypercent: 0,
 }
 
 var firstnames = ["Brent","Tim","Jan","Jim","Dan","Tom","Simon","Joshua","Fred","Edeard","Finitan","Damon","Charles","Jeff","Tristan","Joe","James","Chris"]
@@ -49,6 +50,11 @@ var settings = {
 var shaping = false;
 
 // system functions
+
+function prettify(input){
+    var output = Math.round(input * 100)/100;
+	return output;
+};
 
 function saveGame(){
 	localStorage.setItem("playerSave", JSON.stringify(player));
@@ -213,6 +219,16 @@ function diceRoll(){
 	return randomdice
 }
 
+function layEggs(){
+	var defaults = genistars['def'][1];
+	player['laypercent'] += defaults;
+	if (player['laypercent'] >= 100){
+		player['eggs']++;
+		player['laypercent'] = 0;
+	}
+
+}
+
 // Window and button functions
 
 $('#btnchangename').click(function(e){
@@ -229,6 +245,7 @@ $('#playeroptions').hide();
 $('#changelog').hide();
 $('#guild').hide();
 $('#npcs').hide();
+$('#marketarea').hide();
 
 $('#btnnext').click(function(e){
 	if ($('#player').is(':visible')){
@@ -257,6 +274,14 @@ $('#btnlast').click(function(e){
 	}
 	$(current).hide();
 	$(next).show();
+});
+$('#btnStables').click(function(e){
+	$('#marketarea').hide();
+	$('#stablesarea').show();
+});
+$('#btnMarket').click(function(e){
+	$('#marketarea').show();
+	$('#stablesarea').hide();
 });
 if (window.File && window.FileReader && window.FileList && window.Blob) {
 	readChangelog()
@@ -304,6 +329,29 @@ $('#btnsavegame').click(function(e){
 $('#btnloadgame').click(function(e){
 	loadGame();
 })
+
+function shapeEgg(autoclicked){
+	//player['eggsshaped']++;
+	if (player['eggs'] >= 1){
+		if (autoclicked == true){
+			player['eggpercent'] += .5;
+		} else {
+			player['eggpercent'] += 1;
+		}
+		if (player['eggpercent'] >= 100){
+			player['eggpercent'] = 0;
+			player['eggs']--;
+			createGenistar('mouse'); // temporary 
+			player['eggsshaped']++;
+			
+		}
+
+	}
+}
+
+$('#btnshape').click(function(e){
+	shapeEgg();
+})
 // Timers
 
 window.setInterval(function() {
@@ -324,11 +372,12 @@ window.setInterval(function() {
 			}
 		}
 		//console.log("Merchants come and go.");
-	} else if (roll >= 6 && roll <= 7){ // ignore 5
+	//} else if (roll >= 4 && roll <= 5){ // ignore 5
+	} else if (roll == 4){
 		console.log("Something annoying happens");
-	} else if (roll >= 9 && roll <= 10){ //
+	} else if (roll >= 5 && roll <= 7){ //
 		console.log("Something benificial happens");
-	} else if (roll >= 11 && roll <= 20){
+	} else if (roll >= 8 && roll <= 20){
 		console.log("Nothing happens...");
 	}
 
@@ -341,12 +390,32 @@ function updateMerchants(){
 	}
 }
 
+function updateStats(){
+	document.getElementById("eggnumber").style.width = prettify(player['eggpercent']) + "%";
+	document.getElementById("eggpercent").innerHTML = prettify(player['eggpercent']) + "%";
+	document.getElementById('playerEggs').innerHTML = prettify(player['eggs']);
+
+	document.getElementById("laynumber").style.width = prettify(player['laypercent']) + "%";
+	document.getElementById("laypercent").innerHTML = prettify(player['laypercent']) + "%";
+}
+
 window.setInterval(function() {
 	// Update screen vars
 	document.getElementById("playerName").innerHTML = player["name"];
 	document.title = "Eggshaper - " + player['name'];
 	document.getElementById('autosave').checked = settings['autosave'];
+	document.getElementById('eggshapes').innerHTML = player['eggsshaped'];
 	updateMerchants();
+	updateStats();
+
+	if (document.getElementById('autoclick').checked == true){
+		shaping = true;
+		shapeEgg(true);
+	} else {
+		shaping = false;
+	}
+
+	layEggs();
 }, 100);
 
 window.setInterval(function() {
