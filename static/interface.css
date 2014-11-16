@@ -61,6 +61,11 @@ body {
 	padding:10px;
 	float: left;
 }
+#auctionobject {
+	border: 2px solid;
+	padding:10px;
+	float: left;	
+}
 #logarea {
 	width: 350px;
 	float:right;

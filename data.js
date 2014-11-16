@@ -340,8 +340,18 @@ function shapeEgg(autoclicked){
 
 $('#btnshape').click(function(e){
 	shapeEgg();
-})
+});
 
+Element.prototype.remove = function(){
+	this.parentElement.removeChild(this);
+}
+NodeList.prototype.remove = HTMLCollection.prototype.remove = function() {
+	for (var i = 0, len = this.length; i < len; i++){
+		if(this[i] && this[i].parentElement) {
+			this[i].parentElement.removeChild(this[i]);
+		}
+	}
+}
 function addButton(gentype, merchant, value){
 	var element = document.createElement("BUTTON");
 	var parentelement = document.createElement("DIV");
@@ -351,7 +361,7 @@ function addButton(gentype, merchant, value){
 
 	var t = document.createTextNode("Sell " + genistars[gentype][0] + " to " + npcs['merchants'][merchant]['firstname'] + " " + npcs['merchants'][merchant]['lastname']);
 	element.appendChild(t);
-	parentelement.id = 'playareaobject';
+	parentelement.id = 'auctionobject';
 	parentelement.appendChild(element);
 
 	var foo = document.getElementById("marketarea");
@@ -380,13 +390,9 @@ function addButton(gentype, merchant, value){
 		if (sold == false){
 			updateLog("It seems this offer has expired!");
 		}
-		var parent = this.parentElement;
-		parent.parentElement.removeChild(parent);
-	}
-
-	this.kill = function(){
-		var parent = this.par;
-		parent.parentElement.removeChild(parent);		
+		//var parent = this.parentElement;
+		//parent.parentElement.removeChild(parent);
+		document.getElementById("auctionobject").remove();
 	}
 
 	recycleButton(this, 1000);
@@ -394,7 +400,7 @@ function addButton(gentype, merchant, value){
 
 function recycleButton(object, time){
 	timer = setTimeout(function(){
-		object.kill();
+		document.getElementById("auctionobject").remove();
 	}, time);
 }
 
