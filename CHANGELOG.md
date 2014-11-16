@@ -12,6 +12,13 @@ NEXT:
 Begin incorporating game data in UI
 Design eggshaping mechanic
 
+v0.0.3
+======
+Added save/load functionality
+Added onload save loading
+Added autosave every few minutes
+Some UI work, added tabbing stat menus
+
 v0.0.2
 ======
 Fleshed out the changelog showing in-game system (for now)

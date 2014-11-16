@@ -13,6 +13,7 @@
 	<div id="nav">
 	<button class="btn" id="btnoptions">Options</button>
 	<button class="btn" id="btnchangelog">Changelog</button>
+	<button class="btn" id="btnmythos">HowTo</button>
 	</div>
 
 	<!--<div id="options">
@@ -20,21 +21,58 @@
 	</div>-->
 
 	<div id="playareaholder">
-		<div id="player">
+		<div id="playermenu">
+			<div id="player">
+			--- Player<br />
+			Name: <span id="playerName">Nobody</span><br />
+			Level: <span id="playerLevel">0</span><br />
+			Eggs: <span id="playerEggs">0</span><br />
+			Gold: <span id="playerGold">0</span><br />
+			--- Genistars<br />
+			Default: <span id="genDefault">1</span><br />
+			ge-mouse: <span id="genMouse">0</span><br />
+			ge-squirrel: <span id="genSquirrel">0</span><br />
+			ge-cat: <span id="genCat">0</span><br />
+			ge-monkey: <span id="genMonkey">0</span><br />
+			ge-wolf: <span id="genWolf">0</span><br />
+			ge-eagle: <span id="genEagle">0</span><br />
+			ge-owl: <span id="genOwl">0</span><br />
+			ge-mule: <span id="genMule">0</span><br />
+			ge-horse: <span id="genHorse">0</span><br />
+			</div>
+			<div id="guild">
+			--- Guild Hall<br />
+			Stables: 0 <br />
+			Dorms: 0 <br />
+			--- Genistars
+			Eggs Shaped: 0 <br />
+			Failed Shapes: 0 <br />
+			</div>
+			<div id="npcs">
+			--- Merchants<br />
+			Some merchants<br />
+			More merchants<br />
+			--- Apprentices <br />
+			Acolyte 1 <br />
+			Acolyte 2 <br />
+			</div>
+			<button class="btnarrow" id="btnlast">&#x2190;</button><button class="btnarrow" id="btnnext">&#x2192;</button><br />
 		</div>
-
+		
 		<div id="playarea">
 		</div>
 
 		<div id="resetoptions">
-			<button class="btn">Reset Void</button> (restart with bonus)<br /><br />
-			<button class="btn">Wipe Save</button>
+			<button class="btn" id="btnreset">Reset Void</button> (restart with bonus)<br /><br />
+			<button class="btn" id="btnwipesave">Wipe Save</button>
 		</div>
 		<div id="playeroptions">
-			<button class="btn">Change Name</button>
+			<button class="btn" id="btnchangename">Change Name</button><br />
 			<button class="btn">Bug Report</button><br />
-			<button class="btn" disabled>Export Save</button>
-			<button class="btn" disabled>Import Save</button>
+			<button class="btn" disabled>Export Save</button><br />
+			<button class="btn" disabled>Import Save</button><br />
+			<br /><br />
+			Autosave: <input type="Checkbox" name="autosave" id="autosave" value="autosave" />
 		</div>
 		<div id="changelog">
 			<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
@@ -43,6 +81,7 @@
 			<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
 			<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
 			</form>
+			<textarea disabled name="txtchangelog" id="txtchangelog" onfocus="setbg('#e5fff3');" onblur="setbg('white')" rows="20" cols="60"></textarea>
 		</div>
 
 		<div id="logarea">

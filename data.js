@@ -3,7 +3,7 @@
 // 
 
 var genistars = {
-	def: ["default", 0, 5000], // name, owned, vlaue 
+	def: ["default", 1, 5000], // name, owned, vlaue 
 	mouse: ["ge-mouse", 0, 10],
 	squirrel: ["ge-squirrel", 0, 25],
 	cat: ["ge-cat", 0, 50],
@@ -28,6 +28,7 @@ var player = {
 	psychxp: 0, // Psychic ability leveling
 	nextlvl: 1000, // psychic xp needed for next level
 	eggs: 0, // number of genistar eggs
+	eggpercent: 0, // 0-100 completed egg
 	failedshapes: 0, // number of failed eggshapes
 	eggsshaped: 0, // number of successful shaped eggs
 	gold: 0, // currency quantity
@@ -41,10 +42,55 @@ var npcs = {
 	apprentices: []
 }
 
+var settings = {
+	autosave: true,
+}
+
 // system functions
+
+function saveGame(){
+	localStorage.setItem("playerSave", JSON.stringify(player));
+	localStorage.setItem("genistarSave", JSON.stringify(genistars));
+	localStorage.setItem("npcSave", JSON.stringify(npcs));
+	localStorage.setItem("settingsSave", JSON.stringify(settings));
+	console.log("Game Saved");
+}
+function loadGame(){
+	var playerSave = JSON.parse(localStorage.getItem("playerSave"));
+	var genistarSave = JSON.parse(localStorage.getItem("genistarSave"));
+	var npcSave = JSON.parse(localStorage.getItem("npcSave"));
+	var settingsSave = JSON.parse(localStorage.getItem("settingsSave"));
+	for (var prop in playerSave){
+		if (typeof playerSave[prop] !== "undefined") player[prop] = playerSave[prop];
+		console.log("Loaded: " + prop);
+	};
+	for (var prop in genistarSave){
+		if (typeof genistarSave[prop] !== "undefined") genistars[prop] = genistarSave[prop];
+		console.log("Loaded: " + prop);
+	};
+	for (var prop in npcSave){
+		if (typeof npcSave[prop] !== "undefined") npcs[prop] = npcSave[prop];
+		console.log("Loaded: " + prop);
+	};
+	for (var prop in settingsSave){
+		if (typeof settingsSave[prop] !== "undefined") settings[prop] = settingsSave[prop];
+		console.log("Loaded: " + prop);
+	};
+	updateLog("Game loaded!");
+}
+function deleteSave(){
+	var r = confirm("Are you sure! This is irreversable!");
+	if (r == true){
+		localStorage.clear();
+		console.log("SaveGame cleared!");
+		window.location.reload();
+	}
+}
+
 function updateLog(logmessage){
 	logmessage = logmessage + "\n";
 	document.getElementById("log").innerHTML += logmessage;
+	$('#log').scrollTop($('#log')[0].scrollHeight);
 }
 updateLog("Welcome...");
 
@@ -58,15 +104,15 @@ function readChangelog(){
 		rawFile.onreadystatechange = function() {
 			changelograw = rawFile.responseText.split("\n");
 			for (i = 0; i < changelograw.length; i++){
-				document.getElementById("changelog").innerHTML += changelograw[i] + "<br />";
+				document.getElementById("txtchangelog").innerHTML += changelograw[i] + "\n";
 			}
 
 			//document.getElementById("changelog").innerHTML += changelograw;
 		}
 		rawFile.send(null);
 	} catch(err){
-		document.getElementById("changelog").innerHTML += "We could not load the CHANGELOG... <br />";
-		document.getElementById("changelog").innerHTML += "Try checking later...";
+		document.getElementById("txtchangelog").innerHTML += "We could not load the CHANGELOG... <br />";
+		document.getElementById("txtchangelog").innerHTML += "Try checking later...";
 	}
 
 }
@@ -161,16 +207,61 @@ function diceRoll(){
 	return randomdice
 }
 
-// Window functions
+// Window and button functions
+
+$('#btnchangename').click(function(e){
+	player['name'] = prompt("Player name: ").substring(0,16);
+	document.getElementById("playerName").innerHTML = player["name"];
+});
+
+$('#btnwipesave').click(function(e){
+	deleteSave();
+});
 
 $('#resetoptions').hide(); // disable the options div when we load
 $('#playeroptions').hide();
 $('#changelog').hide();
+$('#guild').hide();
+$('#npcs').hide();
+
+$('#btnnext').click(function(e){
+	if ($('#player').is(':visible')){
+		current = "#player";
+		next = "#guild";
+	} else if ($('#guild').is(':visible')){
+		current = "#guild";
+		next = "#npcs";
+	} else if ($('#npcs').is(':visible')){
+		current = "#npcs";
+		next = "#player";
+	}
+	$(current).hide();
+	$(next).show();
+});
+$('#btnlast').click(function(e){
+	if ($('#player').is(':visible')){
+		current = "#player";
+		next = "#npcs";
+	} else if ($('#guild').is(':visible')){
+		current = "#guild";
+		next = "#player";
+	} else if ($('#npcs').is(':visible')){
+		current = "#npcs";
+		next = "#guild";
+	}
+	$(current).hide();
+	$(next).show();
+});
 if (window.File && window.FileReader && window.FileList && window.Blob) {
 	readChangelog()
 } else {
   alert('The File APIs are not fully supported by your browser.');
 }
+
+$('#autosave').click(function(e){
+	autosavevalue = document.getElementById('autosave');
+	settings['autosave'] = document.getElementById('autosave').checked;
+});
 
 $('#btnoptions').click(function(e){ // toggle the divs
 	e.preventDefault();
@@ -185,7 +276,7 @@ $('#btnoptions').click(function(e){ // toggle the divs
 		$('#resetoptions').show();
 		$('#playeroptions').show();
 	}
-})
+});
 
 $('#btnchangelog').click(function(e){
 	$('#resetoptions').hide();
@@ -199,7 +290,7 @@ $('#btnchangelog').click(function(e){
 		$('#changelog').show();		
 	}
 	// Check for the various File API support.
-})
+});
 
 // Timers
 
@@ -229,19 +320,25 @@ window.setInterval(function() {
 		console.log("Nothing happens...");
 	}
 
+}, 1000);
 
-}, 1000)
+window.setInterval(function() {
+	// Update screen vars
+	document.getElementById("playerName").innerHTML = player["name"];
+	document.title = "Eggshaper - " + player['name'];
+	document.getElementById('autosave').checked = settings['autosave'];
+}, 100);
 
+window.setInterval(function() {
+	// autosave
+	if (settings['autosave'] == true){
+		saveGame();
+		updateLog("Game saved!");
+	}
+}, 120000);
 
-
-
-
-
-
-
-
-
-
+// big time onload stuff
+loadGame();
 
 
 
