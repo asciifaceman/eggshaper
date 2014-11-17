@@ -15,6 +15,10 @@ var genistars = {
 	horse: ["ge-horse", 0, 100],
 }
 
+var defaults = {
+	health: 1.0
+}
+
 var guild = {
 	apprentices: 0, // number of apprentices
 	stables: 0,
@@ -26,7 +30,7 @@ var player = {
 	name: "Apprentice",
 	psych: 0, // psychic level
 	psychxp: 0, // Psychic ability leveling
-	nextlvl: 1000, // psychic xp needed for next level
+	nextlvl: 10, // psychic xp needed for next level
 	eggs: 0, // number of genistar eggs
 	eggpercent: 0, // 0-100 completed egg
 	failedshapes: 0, // number of failed eggshapes
@@ -221,11 +225,14 @@ function diceRoll(){
 }
 
 function layEggs(){
-	var defaults = genistars['def'][1];
-	player['laypercent'] += defaults;
+	var defaultsnum = genistars['def'][1];
+	var health = defaults['health'];
+
+	player['laypercent'] += (Math.random() * defaultsnum) * health;
 	if (player['laypercent'] >= 100){
 		player['eggs']++;
 		player['laypercent'] = 0;
+		updateLog("Your default laid an egg!");
 	}
 
 }
@@ -314,10 +321,128 @@ $('#btnchangelog').click(function(e){
 
 $('#btnsavegame').click(function(e){
 	saveGame();
-})
+});
 $('#btnloadgame').click(function(e){
 	loadGame();
-})
+});
+
+// Upkeep buttons
+$('#btnFeedDef').click(function(e){
+	if (player['gold'] >= 20){
+		if (defaults['health'] > 0.9){
+			updateLog("Your defaults are still in great shape.");
+		} else {
+			player['gold'] -= 20;
+			defaults['health'] = 1.0;
+			updateLog("You fed and cared for your defaults.");			
+		}
+	} else {
+		updateLog("Not enough money!");
+	}
+});
+
+// Sell Buttons
+$('#btnSellEgg').click(function(e){
+	saleprice = Number(document.getElementById('eggmarketprice').innerHTML);
+	if (player['eggs'] >= 1){
+		player['gold'] += saleprice;
+		player['eggs']--;
+		updateLog("Sold an Egg for $" + saleprice);
+	} else {
+		updateLog("You have no Eggs");
+	}
+
+});
+$('#btnSellDefault').click(function(e){
+	saleprice = Number(document.getElementById('defmarketprice').innerHTML);
+	if (genistars['def'][1] >= 1){
+		// can sell
+	} else {
+		updateLog("You have no Defaults");
+	}
+});
+$('#btnSellMouse').click(function(e){
+	saleprice = Number(document.getElementById('mousemarketprice').innerHTML);
+	if (genistars['mouse'][1] >= 1){
+		// can sell
+		updateLog("Sold ge-mouse.");
+	} else {
+		updateLog("You have no ge-mouse");
+	}
+});
+$('#btnSellSquirrel').click(function(e){
+	saleprice = Number(document.getElementById('squirrelmarketprice').innerHTML);
+	if (genistars['squirrel'][1] >= 1){
+		// can sell
+	} else {
+		updateLog("You have no ge-squirrel");
+	}
+});
+$('#btnSellCat').click(function(e){
+	saleprice = Number(document.getElementById('catmarketprice').innerHTML);
+	if (genistars['cat'][1] >= 1){
+		// can sell
+	} else {
+		updateLog("You have no ge-cat");
+	}
+});
+$('#btnSellMonkey').click(function(e){
+	saleprice = Number(document.getElementById('monkeymarketprice').innerHTML);
+	if (genistars['monkey'][1] >= 1){
+		// can sell
+	} else {
+		updateLog("You have no ge-monkey");
+	}
+});
+$('#btnSellWolf').click(function(e){
+	saleprice = Number(document.getElementById('wolfmarketprice').innerHTML);
+	if (genistars['wolf'][1] >= 1){
+		// can sell
+	} else {
+		updateLog("You have no ge-wolf");
+	}
+});
+$('#btnSellEagle').click(function(e){
+	saleprice = Number(document.getElementById('eaglemarketprice').innerHTML);
+	if (genistars['eagle'][1] >= 1){
+		// can sell
+	} else {
+		updateLog("You have no ge-eagle");
+	}
+});
+$('#btnSellOwl').click(function(e){
+	saleprice = Number(document.getElementById('owlmarketprice').innerHTML);
+	if (genistars['owl'][1] >= 1){
+		// can sell
+	} else {
+		updateLog("You have no ge-owl");
+	}
+});
+$('#btnSellMule').click(function(e){
+	saleprice = Number(document.getElementById('mulemarketprice').innerHTML);
+	if (genistars['mule'][1] >= 1){
+		// can sell
+	} else {
+		updateLog("You have no ge-mule");
+	}
+});
+$('#btnSellHorse').click(function(e){
+	saleprice = Number(document.getElementById('horsemarketprice').innerHTML);
+	if (genistars['horse'][1] >= 1){
+		// can sell
+	} else {
+		updateLog("You have no ge-horse");
+	}
+});
+// End Sell Buttons
+
+function checkLevel(){
+	if (player['psychxp'] >= player['nextlvl']){
+		player['psychxp'] = 0;
+		player['psych']++;
+		player['nextlvl'] = (Math.pow(player["psych"], 2) - Math.log(Math.pow(player["psych"],2)));
+	}
+}
 
 function shapeEgg(autoclicked){
 	//player['eggsshaped']++;
@@ -328,11 +453,28 @@ function shapeEgg(autoclicked){
 			player['eggpercent'] += 1;
 		}
 		if (player['eggpercent'] >= 100){
-			player['eggpercent'] = 0;
-			player['eggs']--;
-			createGenistar('mouse'); // temporary 
-			player['eggsshaped']++;
-			
+
+			successrate = Math.floor((Math.random() * player['psych']));
+			n = (Math.random() * 100);
+			//successroll = successrate + "d6";
+			//roll = d20.roll(successroll, false);
+			console.log("% success: " + successrate + " [" + n + "]");
+			if (n > successrate){
+				updateLog("You failed to shape the egg");
+				player['eggs']--;
+				player['eggpercent'] = 0;
+				player['failedshapes']++;
+				player['psychxp']++;
+				checkLevel();
+			} else {
+				updateLog("You shaped an egg!");
+				player['eggpercent'] = 0;
+				player['eggs']--;
+				createGenistar('mouse'); // temporary 
+				player['eggsshaped']++;
+				player['psychxp'] += 5;
+				checkLevel();			
+			}
 		}
 
 	}
@@ -440,8 +582,25 @@ function updateStats(){
 	document.getElementById("eggpercent").innerHTML = prettify(player['eggpercent']) + "%";
 	document.getElementById('playerEggs').innerHTML = prettify(player['eggs']);
 
+	document.title = prettify(player['laypercent']) + "%";
+
 	document.getElementById("laynumber").style.width = prettify(player['laypercent']) + "%";
 	document.getElementById("laypercent").innerHTML = prettify(player['laypercent']) + "%";
+
+	document.getElementById('playerGold').innerHTML = prettify(player['gold']);
+	document.getElementById('defaulthealth').innerHTML = prettify(defaults['health']) * 100 + "%";
+
+	document.getElementById('genDefault').innerHTML = genistars['def'][1];
+	document.getElementById('genMouse').innerHTML = genistars['mouse'][1];
+	document.getElementById('genSquirrel').innerHTML = genistars['squirrel'][1];
+	document.getElementById('genCat').innerHTML = genistars['cat'][1];
+	document.getElementById('genMonkey').innerHTML = genistars['monkey'][1];
+	document.getElementById('genWolf').innerHTML = genistars['wolf'][1];
+	document.getElementById('genEagle').innerHTML = genistars['eagle'][1];
+	document.getElementById('genOwl').innerHTML = genistars['owl'][1];
+	document.getElementById('genMule').innerHTML = genistars['mule'][1];
+	document.getElementById('genHorse').innerHTML = genistars['horse'][1];
+
 }
 
 function updateMarket(){
@@ -450,12 +609,8 @@ function updateMarket(){
 	for (var index in npcs['merchants']){
 		wealth += npcs['merchants'][index]['purse'];
 	}
-
-	console.log(wealth);
-
 	for (var prop in genistars){
 		spanid = prop + "marketprice";
-		console.log(spanid);
 		document.getElementById(spanid).innerHTML = prettify(Math.floor(Math.random() * genistars[prop][2]));
 	}
 	document.getElementById('eggmarketprice').innerHTML = prettify(Math.floor(Math.random() * wealth) / 100);
@@ -478,16 +633,21 @@ function onLoad(){
 	$('#guild').hide();
 	$('#npcs').hide();
 	$('#marketarea').hide();
-	
+
 	window.setInterval(function() {
 		// Update screen vars
+
 		document.getElementById("playerName").innerHTML = player["name"];
-		document.title = "Eggshaper - " + player['name'];
+		//document.title = "Eggshaper - " + player['name'];
 		document.getElementById('autosave').checked = settings['autosave'];
 		document.getElementById('eggshapes').innerHTML = player['eggsshaped'];
+
 		updateMerchants();
 		updateStats();
 
+	}, 100);
+
+	window.setInterval(function(){
 		if (document.getElementById('autoclick').checked == true){
 			shaping = true;
 			shapeEgg(true);
@@ -496,11 +656,13 @@ function onLoad(){
 		}
 
 		layEggs();
-	}, 100);
+		defaults['health'] -= (Math.random() / 700); // decay default lay health
+	}, 1000);
 
 	window.setInterval(function(){
 		merchantOffers();
 		updateMarket();
+
 	}, 10000)
 
 	window.setInterval(function() {
