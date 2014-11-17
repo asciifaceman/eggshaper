@@ -352,57 +352,57 @@ NodeList.prototype.remove = HTMLCollection.prototype.remove = function() {
 		}
 	}
 }
-function addButton(gentype, merchant, value, offerTime){
-	var element = document.createElement("BUTTON");
-	var parentelement = document.createElement("DIV");
-	element.setAttribute("class", "btn");
-	element.setAttribute("id", "btnSell" + gentype);
-	element.name = gentype;
-
-	var t = document.createTextNode("Sell " + genistars[gentype][0] + " to " + npcs['merchants'][merchant]['firstname'] + " " + npcs['merchants'][merchant]['lastname']);
-	element.appendChild(t);
-	parentelement.id = 'auctionobject';
-	parentelement.appendChild(element);
-
-	var foo = document.getElementById("marketarea");
-	foo.appendChild(parentelement);
-
-	element.uid = npcs['merchants'][merchant]['uid'];
-	element.gentype = gentype;
-	element.sellval = value;
-	par = parentelement;
-
-	element.onclick = function() {
-		var sold = false
-		for (var index in npcs['merchants']){
-			if (npcs['merchants'][index]['uid'] == this.uid){
-				if (genistars[gentype][1] > 0){
-					updateLog("You sold " + npcs['merchants'][index]['firstname'] + " " + npcs['merchants'][index]['lastname'] + " a " + genistars[this.gentype][0] + " for " + this.sellval);
-					npcs['merchants'][index]['purse'] -= this.sellval;
-					sold = !this.sold;
-					console.log("Setting sold to " + sold);
-				} else {
-					updateLog("You ran out of genistars since this offer was made!");
-					sold = !this.sold;
-				}
-			}
-		}
-		if (sold == false){
-			updateLog("It seems this offer has expired!");
-		}
-		//var parent = this.parentElement;
-		//parent.parentElement.removeChild(parent);
-		document.getElementById("auctionobject").remove();
-	}
-
-	recycleButton(this, offerTime);
-}
-
-function recycleButton(object, time){
-	timer = setTimeout(function(){
-		document.getElementById("auctionobject").remove();
-	}, time);
-}
+//function addButton(gentype, merchant, value, offerTime){
+//	var element = document.createElement("BUTTON");
+//	var parentelement = document.createElement("DIV");
+//	element.setAttribute("class", "btn");
+//	element.setAttribute("id", "btnSell" + gentype);
+//	element.name = gentype;
+//
+//	var t = document.createTextNode("Sell " + genistars[gentype][0] + " to " + npcs['merchants'][merchant]['firstname'] + " " + npcs['merchants'][merchant]['lastname']);
+//	element.appendChild(t);
+//	parentelement.id = 'auctionobject';
+//	parentelement.appendChild(element);
+//
+//	var foo = document.getElementById("marketarea");
+//	foo.appendChild(parentelement);
+//
+//	element.uid = npcs['merchants'][merchant]['uid'];
+//	element.gentype = gentype;
+//	element.sellval = value;
+//	par = parentelement;
+//
+//	element.onclick = function() {
+//		var sold = false
+//		for (var index in npcs['merchants']){
+//			if (npcs['merchants'][index]['uid'] == this.uid){
+//				if (genistars[gentype][1] > 0){
+//					updateLog("You sold " + npcs['merchants'][index]['firstname'] + " " + npcs['merchants'][index]['lastname'] + " a " + genistars[this.gentype][0] + " for " + this.sellval);
+//					npcs['merchants'][index]['purse'] -= this.sellval;
+//					sold = !this.sold;
+//					console.log("Setting sold to " + sold);
+//				} else {
+//					updateLog("You ran out of genistars since this offer was made!");
+//					sold = !this.sold;
+//				}
+//			}
+//		}
+//		if (sold == false){
+//			updateLog("It seems this offer has expired!");
+//		}
+//		//var parent = this.parentElement;
+//		//parent.parentElement.removeChild(parent);
+//		document.getElementById("auctionobject").remove();
+//	}
+//
+//	recycleButton(this, offerTime);
+//}
+//
+//function recycleButton(object, time){
+//	timer = setTimeout(function(){
+//		document.getElementById("auctionobject").remove();
+//	}, time);
+//}
 
 function updateMerchants(){
 	document.getElementById("merchants").innerHTML = "";
@@ -413,22 +413,7 @@ function updateMerchants(){
 			npcs['merchants'].splice(index, 1);
 		}
 		document.getElementById("merchants").innerHTML += npcs['merchants'][index]['firstname'] + " " + npcs['merchants'][index]['lastname'] + " ($" + npcs['merchants'][index]['purse'] + ")<br />";
-
-		var result;
-		var inc = 0;
-		for (var prop in genistars){
-			if (Math.random() < 1/++inc) {
-				if (genistars[prop][1] > 0){
-					result = prop;	
-				}
-				
-			}
-		}
-		if (result != null){
-			//addButton(result, index, 100);
-		}
 	}
-
 }
 
 function merchantOffers(){
@@ -444,7 +429,7 @@ function merchantOffers(){
 			}
 		}
 		if (result != null){
-			addButton(result, index, 100, Math.random() * 120000);;
+			//addButton(result, index, 100, Math.random() * 120000);;
 		}
 	}
 
@@ -459,9 +444,27 @@ function updateStats(){
 	document.getElementById("laypercent").innerHTML = prettify(player['laypercent']) + "%";
 }
 
+function updateMarket(){
+	// Update market prices based on total merchant wealth
+	var wealth = 0;
+	for (var index in npcs['merchants']){
+		wealth += npcs['merchants'][index]['purse'];
+	}
+
+	console.log(wealth);
+
+	for (var prop in genistars){
+		spanid = prop + "marketprice";
+		console.log(spanid);
+		document.getElementById(spanid).innerHTML = prettify(Math.floor(Math.random() * genistars[prop][2]));
+	}
+	document.getElementById('eggmarketprice').innerHTML = prettify(Math.floor(Math.random() * wealth) / 100);
+}
+
 function onLoad(){
 	// big time onload stuff
 	loadGame();
+	updateMarket();
 
 	if (window.File && window.FileReader && window.FileList && window.Blob) {
 		readChangelog()
@@ -497,6 +500,7 @@ function onLoad(){
 
 	window.setInterval(function(){
 		merchantOffers();
+		updateMarket();
 	}, 10000)
 
 	window.setInterval(function() {
